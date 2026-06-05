@@ -50,7 +50,8 @@ void render(int width,
     }
   }
 
-  raytrace::utils::io::write_ppm("output.ppm", width, height, pixels);
+  raytrace::utils::io::write_ppm(
+      "output/serial/output.ppm", width, height, pixels);
 }
 }  // namespace serial
 }  // namespace raytrace

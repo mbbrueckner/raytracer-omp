@@ -164,7 +164,7 @@ def render(width=100, height=100, stl_file="test.stl",
             b = max(0,min(255, int(255 * color.z)))
             pixels.append((r, g, b))
 
-    write_ppm("output.ppm", width, height, pixels)
+    write_ppm("output/reference/output.ppm", width, height, pixels)
     if show:
         show_image( width, height, pixels)
 
