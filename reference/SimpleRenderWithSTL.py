@@ -132,11 +132,12 @@ def show_image( width, height, pixels):
 
 
 # -------- Render --------
-def render(width=100, height=100, stl_file="test.stl", 
-           C = Vec3(20, -20, 20), 
-           cam_lookat=Vec3(0, 0, 0), 
+def render(width=100, height=100, stl_file="test.stl",
+           C = Vec3(20, -20, 20),
+           cam_lookat=Vec3(0, 0, 0),
            cam_up=Vec3(0, 0, 1),
-           light = Vec3(20, -20, 20)):
+           light = Vec3(20, -20, 20),
+           show=True):
     
     forward = (cam_lookat - C).normalize()
     right = forward.cross(cam_up).normalize()
@@ -164,17 +165,21 @@ def render(width=100, height=100, stl_file="test.stl",
             pixels.append((r, g, b))
 
     write_ppm("output.ppm", width, height, pixels)
-    show_image( width, height, pixels)
+    if show:
+        show_image( width, height, pixels)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Simple STL ray tracer")
     parser.add_argument("stl_file", help="path to the STL file")
     parser.add_argument("width", type=int, nargs="?", default=600, help="image width")
     parser.add_argument("height", type=int, nargs="?", default=600, help="image height")
+    parser.add_argument("--no-show", dest="show", action="store_false",
+                        help="render without opening the matplotlib window")
     args = parser.parse_args()
 
     cam_pos=Vec3(20, -20, 10)
     cam_lookat=Vec3(0, 0, 3)
     cam_up=Vec3(0, 0, 1)
     light_source = Vec3(20, -20, 5)
-    render(args.width, args.height, args.stl_file, cam_pos, cam_lookat, cam_up, light_source)
+    render(args.width, args.height, args.stl_file, cam_pos, cam_lookat, cam_up,
+           light_source, show=args.show)
