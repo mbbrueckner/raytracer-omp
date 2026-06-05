@@ -5,7 +5,7 @@ project(raytracer-omp
   DESCRIPTION "A simple OpenMP-parallelized ray tracer in C++"
   LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
