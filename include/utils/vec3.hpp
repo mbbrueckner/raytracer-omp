@@ -5,6 +5,14 @@
 namespace raytrace {
 namespace utils {
 
+class Vec3;
+
+inline Vec3 operator+(const Vec3& lhs, const Vec3& rhs);
+inline Vec3 operator-(const Vec3& lhs, const Vec3& rhs);
+inline Vec3 operator*(const Vec3& lhs, const Vec3& rhs);
+inline Vec3 operator*(double scalar, const Vec3& rhs);
+inline Vec3 operator*(const Vec3& lhs, double scalar);
+
 class Vec3 {
  public:
   double x, y, z;
