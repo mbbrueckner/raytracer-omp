@@ -1,5 +1,6 @@
 import argparse
 import math
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -116,6 +117,9 @@ def load_stl(path: str, color: Vec3):
 
 # -------- Write 2D graphic --------
 def write_ppm(fname, width, height, pixels):
+    parent = os.path.dirname(fname)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     with open(fname, "w") as f:
         f.write(f"P3\n{width} {height}\n255\n")
         for r, g, b in pixels:
