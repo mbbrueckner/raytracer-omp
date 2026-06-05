@@ -1,3 +1,4 @@
+import argparse
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -166,11 +167,14 @@ def render(width=100, height=100, stl_file="test.stl",
     show_image( width, height, pixels)
 
 if __name__ == "__main__":
-    width=600
-    height=600
-    stl_file="test.stl"
+    parser = argparse.ArgumentParser(description="Simple STL ray tracer")
+    parser.add_argument("stl_file", help="path to the STL file")
+    parser.add_argument("width", type=int, nargs="?", default=600, help="image width")
+    parser.add_argument("height", type=int, nargs="?", default=600, help="image height")
+    args = parser.parse_args()
+
     cam_pos=Vec3(20, -20, 10)
     cam_lookat=Vec3(0, 0, 3)
     cam_up=Vec3(0, 0, 1)
     light_source = Vec3(20, -20, 5)
-    render(width, height, stl_file, cam_pos, cam_lookat, cam_up, light_source)
+    render(args.width, args.height, args.stl_file, cam_pos, cam_lookat, cam_up, light_source)
