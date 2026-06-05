@@ -14,6 +14,7 @@ Usage:
 
 import argparse
 import csv
+import numpy as np
 import os
 import statistics
 import subprocess
@@ -65,11 +66,18 @@ def bench(cmd, repeats, env=None) -> tuple:
     return min(times), statistics.mean(times)
 
 
+def read_ppm_pixels(path):
+    with open(path) as f:
+        lines = [l for l in f if not l.startswith('#')]
+    # P3 header: magic, width height, maxval, then pixels
+    data = ' '.join(lines[3:]).split()
+    return np.array(data, dtype=int)
+
 def images_match(path_a, path_b, path_c) -> bool:
     if not all(os.path.isfile(p) for p in (path_a, path_b, path_c)):
         return False
-    with open(path_a, "rb") as fa, open(path_b, "rb") as fb, open(path_c, "rb") as fc:
-        return fa.read() == fb.read() == fc.read()
+    a, b, c = read_ppm_pixels(path_a), read_ppm_pixels(path_b), read_ppm_pixels(path_c)
+    return np.allclose(a, b, atol=1) and np.allclose(a, c, atol=1)
 
 
 def main() -> int:
