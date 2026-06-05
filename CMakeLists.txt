@@ -25,22 +25,25 @@ endif()
 
 find_package(OpenMP)
 
-add_executable(raytracer src/main.cpp)
+add_executable(raytracer_serial src/serial.cpp)
+add_executable(raytracer_parallel src/parallel.cpp)
 
-target_include_directories(raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+foreach(target raytracer_serial raytracer_parallel)
+  target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Absolute output dir so the binary writes into the project's output/ regardless
-# of the working directory it is launched from.
-target_compile_definitions(raytracer PRIVATE
-  RAYTRACER_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output")
+  # Absolute output dir so the binary writes into the project's output/ regardless
+  # of the working directory it is launched from.
+  target_compile_definitions(${target} PRIVATE
+    RAYTRACER_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output")
+
+  target_compile_options(${target} PRIVATE
+    $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Werror -O0>)
+endforeach()
 
 if(OpenMP_CXX_FOUND)
-  target_link_libraries(raytracer PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(raytracer_parallel PRIVATE OpenMP::OpenMP_CXX)
 else()
   message(WARNING
     "OpenMP not found - building serial version only. "
     "On macOS install it with: brew install libomp")
 endif()
-
-target_compile_options(raytracer PRIVATE
-  $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Werror -O0>)
