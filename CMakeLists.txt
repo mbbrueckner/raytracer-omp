@@ -43,4 +43,4 @@ else()
 endif()
 
 target_compile_options(raytracer PRIVATE
-  $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -O0>)
+  $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Werror -O0>)
