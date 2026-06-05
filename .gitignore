@@ -34,6 +34,10 @@
 *.a
 *.lib
 
+# Python
+*.pyc
+
+
 # Executables
 *.exe
 *.out
