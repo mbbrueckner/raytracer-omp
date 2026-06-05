@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -44,7 +45,14 @@ inline void write_ppm(const std::string& fname,
                       int width,
                       int height,
                       const std::vector<std::array<int, 3>>& pixels) {
+  const std::filesystem::path path(fname);
+  if (path.has_parent_path()) {
+    std::filesystem::create_directories(path.parent_path());
+  }
   std::ofstream file(fname);
+  if (!file) {
+    throw std::runtime_error("Could not open output file: " + fname);
+  }
   file << "P3\n" << width << " " << height << "\n255\n";
   for (const std::array<int, 3>& px : pixels) {
     file << px[0] << " " << px[1] << " " << px[2] << "\n";
