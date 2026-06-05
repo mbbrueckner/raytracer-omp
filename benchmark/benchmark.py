@@ -174,7 +174,7 @@ def main() -> int:
                 "efficiency": round(ep, 4),
             })
 
-    csv_path = os.path.join(REPO_ROOT, "benchmark", "results.csv")
+    csv_path = os.path.join(REPO_ROOT, "benchmark","results", "results.csv")
     with open(csv_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS)
         writer.writeheader()
