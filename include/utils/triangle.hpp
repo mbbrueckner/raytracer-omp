@@ -10,14 +10,14 @@ namespace utils {
 constexpr double eps = 1e-6;
 
 struct Hit {
-  const double alpha;
-  const Vec3 normal, color;
+  double alpha;
+  Vec3 normal, color;
 };
 
 struct Triangle {
-  const Vec3 T1, T2, T3, color;
+  Vec3 T1, T2, T3, color;
 
-  std::optional<Hit> intersect(const Vec3& C, const Vec3& D) {
+  std::optional<Hit> intersect(const Vec3& C, const Vec3& D) const {
     const Vec3 E1 = T2 - T1;
     const Vec3 E2 = T3 - T1;
 
@@ -38,7 +38,7 @@ struct Triangle {
     if (alpha <= eps) return std::nullopt;
 
     const Vec3 normal = E1.cross(E2).normalize();
-    return Hit(alpha, normal, color);
+    return Hit{alpha, normal, color};
   }
 };
 
