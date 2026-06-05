@@ -9,6 +9,11 @@
 
 namespace raytrace {
 namespace serial {
+
+#ifndef RAYTRACER_OUTPUT_DIR
+#define RAYTRACER_OUTPUT_DIR "output"
+#endif
+
 int to_byte(double value) {
   return std::max(0, std::min(255, static_cast<int>(255 * value)));
 }
@@ -51,7 +56,8 @@ void render(int width,
   }
 
   raytrace::utils::io::write_ppm(
-      "output/serial/output.ppm", width, height, pixels);
+      std::string(RAYTRACER_OUTPUT_DIR) + "/serial/output.ppm",
+      width, height, pixels);
 }
 }  // namespace serial
 }  // namespace raytrace

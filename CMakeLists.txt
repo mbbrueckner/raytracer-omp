@@ -29,6 +29,11 @@ add_executable(raytracer src/main.cpp)
 
 target_include_directories(raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Absolute output dir so the binary writes into the project's output/ regardless
+# of the working directory it is launched from.
+target_compile_definitions(raytracer PRIVATE
+  RAYTRACER_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output")
+
 if(OpenMP_CXX_FOUND)
   target_link_libraries(raytracer PRIVATE OpenMP::OpenMP_CXX)
 else()
