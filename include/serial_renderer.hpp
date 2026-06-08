@@ -57,7 +57,9 @@ void render(int width,
 
   raytrace::utils::io::write_ppm(
       std::string(RAYTRACER_OUTPUT_DIR) + "/serial/output.ppm",
-      width, height, pixels);
+      width,
+      height,
+      pixels);
 }
 }  // namespace serial
 }  // namespace raytrace
