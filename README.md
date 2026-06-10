@@ -244,14 +244,9 @@ bandwidth saturation at larger problem sizes.
 | Light source    | (20, −20, 5)    |
 | Field of view   | π/3             |
 | Background      | white (1, 1, 1) |
-<<<<<<< HEAD
-=======
-
 
 ## Usage of Artificial Intelligence
  
 In this project, Claude Sonnet 4.6 was used to debug minor issues, to implement the plot script `benchmark/plot.py`, as well as to answer questions about the task and C++ in general. 
 
 Every other line of code is written by hand by [Mika Brückner](https://github.com/mbbrueckner). 
- 
->>>>>>> 95d90ba (docs: add AI usage section)
