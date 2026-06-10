@@ -3,7 +3,7 @@
 
 Produces two figures:
   1. Runtime comparison  - serial, python, parallel(p) per resolution
-  2. Speedup plot        - S(p) vs ideal linear + Amdahl fit
+  2. Speedup plot        - S(n; p) vs ideal linear + Amdahl fit
 
 Usage:
     python benchmark/plot.py
@@ -24,9 +24,9 @@ DEFAULT_CSV = os.path.join(REPO_ROOT, "benchmark", "results", "results.csv")
 DEFAULT_OUT = os.path.join(REPO_ROOT, "benchmark", "results")
 
 
-def amdahl(p, s):
-    """S(p) = 1 / (s + (1-s)/p)"""
-    return 1.0 / (s + (1.0 - s) / p)
+def amdahl(p, alpha):
+    """Amdahl's law: S(n; p) = 1 / (alpha + (1 - alpha) / p)"""
+    return 1.0 / (alpha + (1.0 - alpha) / p)
 
 
 def plot_runtime(df, out_dir):
@@ -34,8 +34,8 @@ def plot_runtime(df, out_dir):
     x = np.arange(len(sizes))
     labels = [f"{s}×{s}" for s in sizes]
 
-    serial_times  = [df[(df["impl"] == "serial")  & (df["size"] == s)]["t_best"].values[0] for s in sizes]
-    python_times  = [df[(df["impl"] == "python")  & (df["size"] == s)]["t_best"].values[0] for s in sizes]
+    serial_times = [df[(df["impl"] == "serial")  & (df["size"] == s)]["t_best"].values[0] for s in sizes]
+    python_times = [df[(df["impl"] == "python")  & (df["size"] == s)]["t_best"].values[0] for s in sizes]
 
     thread_counts = sorted(df[df["impl"] == "parallel"]["threads"].unique())
     parallel_by_p = {
@@ -49,8 +49,8 @@ def plot_runtime(df, out_dir):
     n_bars = 2 + len(thread_counts)
     offsets = np.linspace(-(n_bars - 1) / 2, (n_bars - 1) / 2, n_bars) * width
 
-    ax.bar(x + offsets[0], serial_times,  width, label="C++ serial",  color="steelblue")
-    ax.bar(x + offsets[1], python_times,  width, label="Python",       color="tomato")
+    ax.bar(x + offsets[0], serial_times, width, label="C++ serial",  color="steelblue")
+    ax.bar(x + offsets[1], python_times, width, label="Python",       color="tomato")
     for idx, p in enumerate(thread_counts):
         ax.bar(x + offsets[2 + idx], parallel_by_p[p], width,
                label=f"parallel p={p}", alpha=0.85)
@@ -58,7 +58,7 @@ def plot_runtime(df, out_dir):
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.set_xlabel("Resolution")
-    ax.set_ylabel("Runtime (s)")
+    ax.set_ylabel("T(n; p)  [s]")
     ax.set_title("Runtime comparison")
     ax.legend()
     ax.grid(axis="y", alpha=0.3)
@@ -84,24 +84,24 @@ def plot_speedup(df, out_dir):
         # Amdahl fit
         try:
             popt, _ = curve_fit(amdahl, threads, speedups, p0=[0.05], bounds=(0, 1))
-            s_fit = popt[0]
+            alpha_fit = popt[0]
             p_dense = np.linspace(1, threads.max(), 200)
-            ax.plot(p_dense, amdahl(p_dense, s_fit), "r--",
-                    label=f"Amdahl fit  s={s_fit:.3f}")
-            print(f"  {size}×{size}: serial fraction s={s_fit:.4f}  "
-                  f"(theoretical max speedup {1/s_fit:.1f}×)")
+            ax.plot(p_dense, amdahl(p_dense, alpha_fit), "r--",
+                    label=f"Amdahl fit  α={alpha_fit:.3f}")
+            print(f"  {size}×{size}: serial fraction α={alpha_fit:.4f}  "
+                  f"(theoretical max speedup 1/α ≈ {1/alpha_fit:.1f}×)")
         except Exception as e:
             print(f"  Amdahl fit failed for {size}×{size}: {e}")
 
-        # Ideal linear
+        # Ideal linear speedup
         p_range = np.array([1, threads.max()])
         ax.plot(p_range, p_range, "k:", label="ideal linear")
 
         # Measured
-        ax.plot(threads, speedups, "bo-", label="measured")
+        ax.plot(threads, speedups, "bo-", label="measured S(n; p)")
 
         ax.set_xlabel("Threads p")
-        ax.set_ylabel("Speedup S(p)")
+        ax.set_ylabel("S(n; p)")
         ax.set_title(f"{size}×{size}")
         ax.set_xticks(threads)
         ax.legend()

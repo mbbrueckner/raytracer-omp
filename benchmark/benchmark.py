@@ -2,9 +2,9 @@
 """Benchmark the C++ serial and parallel ray tracer against the Python reference.
 
 For each resolution and thread count the parallel renderer is timed over
-several repetitions. Speedup S(p) = T(1)/T(p) and efficiency E(p) = S(p)/p
-are computed and printed. Images are compared pixel-by-pixel against the
-serial and Python reference outputs.
+several repetitions. Speedup S(n; p) = T(n; 1)/T(n; p) and efficiency
+E(n; p) = S(n; p)/p are computed and printed. Images are compared
+pixel-by-pixel against the serial and Python reference outputs.
 
 Usage:
     python benchmark/benchmark.py
@@ -14,7 +14,6 @@ Usage:
 
 import argparse
 import csv
-import numpy as np
 import os
 import statistics
 import subprocess
@@ -69,7 +68,6 @@ def bench(cmd, repeats, env=None) -> tuple:
 def read_ppm_pixels(path):
     with open(path) as f:
         lines = [l for l in f if not l.startswith('#')]
-    # P3 header: magic, width height, maxval, then pixels
     data = ' '.join(lines[3:]).split()
     return np.array(data, dtype=int)
 
@@ -160,8 +158,8 @@ def main() -> int:
 
         # Scaling table 
         print()
-        header = (f"  {'p':>4} | {'T(p) best':>10} {'T(p) mean':>10} | "
-                  f"{'S(p)':>6} {'E(p)':>6} | match")
+        header = (f"  {'p':>4} | {'T(n;p) best':>11} {'T(n;p) mean':>11} | "
+                  f"{'S(n;p)':>7} {'E(n;p)':>7} | match")
         print(header)
         print("  " + "-" * (len(header) - 2))
 
@@ -170,8 +168,8 @@ def main() -> int:
             ep    = sp / p
             match = ("yes" if images_match(CPP_S_OUTPUT, CPP_P_OUTPUT, PY_OUTPUT)
                      else "NO")
-            print(f"  {p:>4} | {p_best:>9.4f}s {p_mean:>9.4f}s | "
-                  f"{sp:>6.3f} {ep:>6.3f} | {match}")
+            print(f"  {p:>4} | {p_best:>10.4f}s {p_mean:>10.4f}s | "
+                  f"{sp:>7.3f} {ep:>7.3f} | {match}")
             results.append({
                 "impl": "parallel",
                 "size": size,
@@ -182,7 +180,7 @@ def main() -> int:
                 "efficiency": round(ep, 4),
             })
 
-    csv_path = os.path.join(REPO_ROOT, "benchmark","results", "results.csv")
+    csv_path = os.path.join(REPO_ROOT, "benchmark", "results", "results.csv")
     with open(csv_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS)
         writer.writeheader()
